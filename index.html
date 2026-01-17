@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IA: Transformando el Futuro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div id="app">
+      <!-- Hero Section -->
+      <section class="hero">
+        <div class="hero-background">
+          <div class="bg-gradient"></div>
+          <div class="bg-image-container">
+            <img src="/ai-background.jpg" alt="AI Background" class="parallax-bg" id="parallax-image">
+          </div>
+          <div class="particles" id="particles"></div>
+        </div>
+
+        <div class="hero-content">
+          <div class="hero-text">
+            <h1 class="hero-title">
+              <span class="title-line">Inteligencia</span>
+              <span class="title-line">Artificial</span>
+            </h1>
+            <p class="hero-subtitle">Transformando el futuro del trabajo</p>
+          </div>
+
+          <button class="play-button" id="playButton">
+            <div class="play-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </div>
+            <span class="play-ripple"></span>
+            <span class="play-ripple delay-1"></span>
+            <span class="play-ripple delay-2"></span>
+          </button>
+
+          <p class="hero-cta">Presiona para comenzar la presentación</p>
+        </div>
+
+        <div class="scroll-indicator">
+          <span></span>
+        </div>
+      </section>
+
+      <!-- Presentation Container (Hidden initially) -->
+      <div class="presentation-container" id="presentationContainer">
+        <div class="presentation-slides" id="slides">
+          <!-- Las diapositivas se cargarán aquí -->
+          <div class="slide active">
+            <h2>Bienvenidos</h2>
+            <p>Esta es la primera diapositiva de ejemplo</p>
+            <p class="slide-hint">Usa las flechas ← → para navegar</p>
+          </div>
+          <div class="slide">
+            <h2>Segunda Diapositiva</h2>
+            <p>Contenido de ejemplo</p>
+          </div>
+          <div class="slide">
+            <h2>Tercera Diapositiva</h2>
+            <p>Más contenido aquí</p>
+          </div>
+        </div>
+
+        <button class="close-presentation" id="closePresentation">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+
+        <div class="slide-counter">
+          <span id="currentSlide">1</span> / <span id="totalSlides">3</span>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
