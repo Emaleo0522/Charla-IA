@@ -2,73 +2,236 @@ import './style.css'
 import { gsap } from 'gsap'
 import simpleParallax from 'simple-parallax-js'
 
-// ========== PARALLAX BACKGROUND ==========
-const parallaxImage = document.getElementById('parallax-image')
-if (parallaxImage) {
-  new simpleParallax(parallaxImage, {
-    scale: 1.6,
-    delay: 0.6,
-    transition: 'cubic-bezier(0,0,0,1)'
-  })
-}
+// ========== COUNTDOWN CONFIGURATION ==========
+const PRESENTATION_DATE = '2026-01-19 15:45:00' // Fecha y hora de la charla (Argentina timezone)
 
-// ========== PARTICLES ANIMATION ==========
-function createParticles() {
-  const particlesContainer = document.getElementById('particles')
-  const particleCount = 50
+// ========== COUNTDOWN CONTROLLER ==========
+class CountdownController {
+  constructor() {
+    this.countdownSection = document.getElementById('countdownSection')
+    this.heroSection = document.querySelector('.hero')
+    this.devSkipButton = document.getElementById('devSkipButton')
 
-  for (let i = 0; i < particleCount; i++) {
-    const particle = document.createElement('div')
-    particle.className = 'particle'
+    this.days = { el: document.getElementById('days'), current: 0, previous: 0 }
+    this.hours = { el: document.getElementById('hours'), current: 0, previous: 0 }
+    this.minutes = { el: document.getElementById('minutes'), current: 0, previous: 0 }
+    this.seconds = { el: document.getElementById('seconds'), current: 0, previous: 0 }
 
-    // Random position
-    particle.style.left = `${Math.random() * 100}%`
-    particle.style.bottom = '-10px'
+    this.init()
+  }
 
-    // Random animation delay and duration
-    particle.style.animationDelay = `${Math.random() * 6}s`
-    particle.style.animationDuration = `${6 + Math.random() * 4}s`
+  init() {
+    // Create particles for countdown
+    this.createCountdownParticles()
 
-    particlesContainer.appendChild(particle)
+    // Start countdown
+    this.update()
+    this.intervalId = setInterval(() => this.update(), 1000)
+
+    // Dev skip button
+    this.devSkipButton.addEventListener('click', () => this.skipCountdown())
+  }
+
+  createCountdownParticles() {
+    const particlesContainer = document.getElementById('countdownParticles')
+    const particleCount = 50
+
+    for (let i = 0; i < particleCount; i++) {
+      const particle = document.createElement('div')
+      particle.className = 'particle'
+      particle.style.left = `${Math.random() * 100}%`
+      particle.style.bottom = '-10px'
+      particle.style.animationDelay = `${Math.random() * 6}s`
+      particle.style.animationDuration = `${6 + Math.random() * 4}s`
+      particlesContainer.appendChild(particle)
+    }
+  }
+
+  zerofill(value) {
+    return (value < 10 && value > -1 ? '0' : '') + value
+  }
+
+  updateCard(card, newValue) {
+    newValue = newValue < 0 ? 0 : newValue
+
+    if (newValue !== card.current) {
+      card.previous = card.current
+      card.current = newValue
+
+      const top = card.el.querySelector('.flip-card__top')
+      const bottom = card.el.querySelector('.flip-card__bottom')
+      const back = card.el.querySelector('.flip-card__back')
+      const backBottom = card.el.querySelector('.flip-card__back-bottom')
+
+      top.textContent = this.zerofill(card.current)
+      bottom.setAttribute('data-value', this.zerofill(card.current))
+      back.setAttribute('data-value', this.zerofill(card.previous))
+      backBottom.setAttribute('data-value', this.zerofill(card.previous))
+
+      // Trigger flip animation
+      card.el.classList.remove('flip')
+      void card.el.offsetWidth // Force reflow
+      card.el.classList.add('flip')
+    }
+  }
+
+  update() {
+    const targetDate = moment(PRESENTATION_DATE, 'YYYY-MM-DD HH:mm:ss')
+    const now = moment()
+    const diff = targetDate.diff(now)
+
+    if (diff <= 0) {
+      // Countdown finished - show hero
+      this.finishCountdown()
+      return
+    }
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24)
+    const minutes = Math.floor((diff / 1000 / 60) % 60)
+    const seconds = Math.floor((diff / 1000) % 60)
+
+    // Hide days if 0
+    const daysContainer = document.getElementById('days-container')
+    if (days === 0) {
+      daysContainer.style.display = 'none'
+    } else {
+      daysContainer.style.display = 'inline-block'
+    }
+
+    this.updateCard(this.days, days)
+    this.updateCard(this.hours, hours)
+    this.updateCard(this.minutes, minutes)
+    this.updateCard(this.seconds, seconds)
+  }
+
+  skipCountdown() {
+    this.finishCountdown()
+  }
+
+  finishCountdown() {
+    clearInterval(this.intervalId)
+
+    // Hide countdown with animation
+    gsap.to(this.countdownSection, {
+      duration: 1,
+      opacity: 0,
+      onComplete: () => {
+        this.countdownSection.style.display = 'none'
+
+        // Show hero section
+        this.heroSection.style.display = 'flex'
+        gsap.to(this.heroSection, {
+          duration: 1,
+          opacity: 1
+        })
+
+        // Initialize hero features
+        initializeHero()
+      }
+    })
   }
 }
 
-createParticles()
+// ========== HERO INITIALIZATION ==========
+function initializeHero() {
+  // Initialize parallax
+  const parallaxImage = document.getElementById('parallax-image')
+  if (parallaxImage) {
+    new simpleParallax(parallaxImage, {
+      scale: 1.6,
+      delay: 0.6,
+      transition: 'cubic-bezier(0,0,0,1)'
+    })
+  }
 
-// ========== GSAP ANIMATIONS ==========
-// Animate hero elements on load
-gsap.from('.hero-title .title-line', {
-  duration: 1.2,
-  y: 100,
-  opacity: 0,
-  stagger: 0.2,
-  ease: 'power4.out',
-  delay: 0.3
-})
+  // Create particles
+  const particlesContainer = document.getElementById('particles')
+  if (particlesContainer) {
+    const particleCount = 50
 
-gsap.from('.hero-subtitle', {
-  duration: 1,
-  y: 30,
-  opacity: 0,
-  ease: 'power3.out',
-  delay: 0.8
-})
+    for (let i = 0; i < particleCount; i++) {
+      const particle = document.createElement('div')
+      particle.className = 'particle'
+      particle.style.left = `${Math.random() * 100}%`
+      particle.style.bottom = '-10px'
+      particle.style.animationDelay = `${Math.random() * 6}s`
+      particle.style.animationDuration = `${6 + Math.random() * 4}s`
+      particlesContainer.appendChild(particle)
+    }
+  }
 
-gsap.from('.play-button', {
-  duration: 1,
-  scale: 0,
-  opacity: 0,
-  ease: 'back.out(1.7)',
-  delay: 1.2
-})
+  // GSAP Animations
+  gsap.from('.hero-title .title-line', {
+    duration: 1.2,
+    y: 100,
+    opacity: 0,
+    stagger: 0.2,
+    ease: 'power4.out',
+    delay: 0.3
+  })
 
-gsap.from('.hero-cta', {
-  duration: 0.8,
-  y: 20,
-  opacity: 0,
-  ease: 'power2.out',
-  delay: 1.6
-})
+  gsap.from('.hero-subtitle', {
+    duration: 1,
+    y: 30,
+    opacity: 0,
+    ease: 'power3.out',
+    delay: 0.8
+  })
+
+  gsap.from('.play-button', {
+    duration: 1,
+    scale: 0,
+    opacity: 0,
+    ease: 'back.out(1.7)',
+    delay: 1.2
+  })
+
+  gsap.from('.hero-cta', {
+    duration: 0.8,
+    y: 20,
+    opacity: 0,
+    ease: 'power2.out',
+    delay: 1.6
+  })
+
+  // Play button hover effects
+  const playButton = document.getElementById('playButton')
+
+  playButton.addEventListener('mouseenter', () => {
+    gsap.to('.play-button', {
+      duration: 0.3,
+      scale: 1.1,
+      ease: 'power2.out'
+    })
+  })
+
+  playButton.addEventListener('mouseleave', () => {
+    gsap.to('.play-button', {
+      duration: 0.3,
+      scale: 1,
+      ease: 'power2.out'
+    })
+  })
+
+  playButton.addEventListener('click', () => {
+    gsap.to('.play-button', {
+      duration: 0.2,
+      scale: 0.9,
+      ease: 'power2.out',
+      onComplete: () => {
+        gsap.to('.play-button', {
+          duration: 0.2,
+          scale: 1,
+          ease: 'power2.out'
+        })
+      }
+    })
+  })
+
+  // Initialize presentation controller
+  new PresentationController()
+}
 
 // ========== PRESENTATION CONTROLLER ==========
 class PresentationController {
@@ -209,42 +372,10 @@ class PresentationController {
   }
 }
 
-// Initialize presentation controller
-const presentation = new PresentationController()
+// ========== INITIALIZE APP ==========
+// Initialize countdown on page load
+const countdown = new CountdownController()
 
-// ========== PLAY BUTTON HOVER EFFECT ==========
-const playButton = document.getElementById('playButton')
-
-playButton.addEventListener('mouseenter', () => {
-  gsap.to('.play-button', {
-    duration: 0.3,
-    scale: 1.1,
-    ease: 'power2.out'
-  })
-})
-
-playButton.addEventListener('mouseleave', () => {
-  gsap.to('.play-button', {
-    duration: 0.3,
-    scale: 1,
-    ease: 'power2.out'
-  })
-})
-
-playButton.addEventListener('click', () => {
-  gsap.to('.play-button', {
-    duration: 0.2,
-    scale: 0.9,
-    ease: 'power2.out',
-    onComplete: () => {
-      gsap.to('.play-button', {
-        duration: 0.2,
-        scale: 1,
-        ease: 'power2.out'
-      })
-    }
-  })
-})
-
-console.log('🚀 Presentación IA cargada correctamente')
+console.log('⏰ Countdown iniciado para el 19/01/2026 a las 15:45')
+console.log('🔧 Modo desarrollo: Click en "Skip" para saltar el countdown')
 console.log('💡 Usa las flechas del teclado para navegar entre diapositivas')

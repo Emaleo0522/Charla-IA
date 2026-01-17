@@ -8,11 +8,80 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
   </head>
   <body>
     <div id="app">
+      <!-- Countdown Section (Initial screen) -->
+      <section class="countdown-section" id="countdownSection">
+        <div class="countdown-background">
+          <div class="bg-gradient"></div>
+          <div class="bg-image-container">
+            <img src="/ai-background.jpg" alt="AI Background" class="parallax-bg">
+          </div>
+          <div class="particles" id="countdownParticles"></div>
+        </div>
+
+        <div class="countdown-content">
+          <h1 class="countdown-title">
+            <span class="title-line">Inteligencia</span>
+            <span class="title-line">Artificial</span>
+          </h1>
+          <p class="countdown-subtitle">La presentación comenzará en</p>
+
+          <div class="flip-clock" id="flipClock">
+            <div class="flip-clock__piece" id="days-container">
+              <div class="flip-clock__card flip-card" id="days">
+                <b class="flip-card__top">00</b>
+                <b class="flip-card__bottom" data-value="00"></b>
+                <b class="flip-card__back" data-value="00"></b>
+                <b class="flip-card__back-bottom" data-value="00"></b>
+              </div>
+              <span class="flip-clock__slot">Días</span>
+            </div>
+
+            <div class="flip-clock__piece">
+              <div class="flip-clock__card flip-card" id="hours">
+                <b class="flip-card__top">00</b>
+                <b class="flip-card__bottom" data-value="00"></b>
+                <b class="flip-card__back" data-value="00"></b>
+                <b class="flip-card__back-bottom" data-value="00"></b>
+              </div>
+              <span class="flip-clock__slot">Horas</span>
+            </div>
+
+            <div class="flip-clock__piece">
+              <div class="flip-clock__card flip-card" id="minutes">
+                <b class="flip-card__top">00</b>
+                <b class="flip-card__bottom" data-value="00"></b>
+                <b class="flip-card__back" data-value="00"></b>
+                <b class="flip-card__back-bottom" data-value="00"></b>
+              </div>
+              <span class="flip-clock__slot">Minutos</span>
+            </div>
+
+            <div class="flip-clock__piece">
+              <div class="flip-clock__card flip-card" id="seconds">
+                <b class="flip-card__top">00</b>
+                <b class="flip-card__bottom" data-value="00"></b>
+                <b class="flip-card__back" data-value="00"></b>
+                <b class="flip-card__back-bottom" data-value="00"></b>
+              </div>
+              <span class="flip-clock__slot">Segundos</span>
+            </div>
+          </div>
+
+          <p class="countdown-date">19 de Enero de 2026 - 15:45 hs</p>
+        </div>
+
+        <!-- Dev Skip Button (only for development) -->
+        <button class="dev-skip-button" id="devSkipButton" title="Saltar countdown (solo desarrollo)">
+          Skip ⏭
+        </button>
+      </section>
+
       <!-- Hero Section -->
-      <section class="hero">
+      <section class="hero" style="display: none;">
         <div class="hero-background">
           <div class="bg-gradient"></div>
           <div class="bg-image-container">
