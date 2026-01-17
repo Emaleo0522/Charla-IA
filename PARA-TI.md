@@ -2,16 +2,31 @@
 
 ## 🎉 ¿Qué tienes ahora?
 
-Una **landing page profesional** que nadie esperará. Cuando presiones el botón de PLAY, 
-se desplegará tu presentación de diapositivas. Tu audiencia pensará que es una web normal
-hasta que reveles que es tu presentación... ¡Factor sorpresa! 🎯
+Una **landing page profesional** con tres niveles de sorpresa:
+
+1. **Countdown (Cuenta regresiva)** - Bloquea el acceso hasta las 15:45 del 19/01/2026
+2. **Hero impresionante** - Cuando termina el countdown o presionas Skip
+3. **Presentación de diapositivas** - Al presionar el botón PLAY
+
+¡Triple factor sorpresa! 🎯🎯🎯
 
 ## 📺 ¿Cómo se ve?
 
-1. **Hero impresionante**: Título con gradiente, fondo con parallax, partículas flotantes
+### Nivel 1: Countdown (⏰ NUEVO)
+1. **Reloj flip**: Cuenta regresiva con efecto 3D profesional
+2. **Días, Horas, Minutos, Segundos**: Animación flip en cada cambio
+3. **Bloqueo total**: No se puede acceder al hero hasta la hora de la charla
+4. **Botón Skip**: Solo visible en desarrollo (esquina superior derecha)
+
+### Nivel 2: Hero
+1. **Título con gradiente**: Fondo con parallax, partículas flotantes
 2. **Botón de play**: En el centro, con animaciones ripple
 3. **Al presionar**: Transición suave a las diapositivas
-4. **Navegación**: Flechas del teclado para avanzar cuando TÚ quieras
+
+### Nivel 3: Presentación
+1. **Navegación**: Flechas del teclado para avanzar cuando TÚ quieras
+2. **Contador de slides**: Siempre visible
+3. **Botón cerrar**: Para volver al hero
 
 ## 🏃‍♂️ Pruébalo AHORA (5 minutos)
 
@@ -20,11 +35,15 @@ cd presentacion-ia
 npm run dev
 ```
 
-1. Abre http://localhost:5173
-2. Observa las animaciones del hero
-3. Click en el botón PLAY
-4. Usa las flechas → y ← para navegar
-5. Presiona ESC para volver al inicio
+1. Abre http://localhost:5173 (o el puerto que indique)
+2. **VE EL COUNTDOWN**: Observa el reloj flip contando hacia el 19/01/2026
+3. **PRESIONA "Skip ⏭"** en la esquina superior derecha (botón de desarrollo)
+4. Observa la transición al hero
+5. Click en el botón PLAY
+6. Usa las flechas → y ← para navegar
+7. Presiona ESC para volver al hero
+
+💡 **Tip**: El countdown es real y funcionará hasta las 15:45 del 19/01. El botón "Skip" es solo para desarrollo.
 
 ## ✏️ Personaliza tus diapositivas (15 minutos)
 
