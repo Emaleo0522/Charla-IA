@@ -1,6 +1,6 @@
 import './style.css'
 import { gsap } from 'gsap'
-import simpleParallax from 'simple-parallax-js'
+import SimpleParallax from 'simple-parallax-js'
 
 // ========== COUNTDOWN CONFIGURATION ==========
 const PRESENTATION_DATE = '2026-01-19 15:45:00' // Fecha y hora de la charla (Argentina timezone)
@@ -24,12 +24,55 @@ class CountdownController {
     // Create particles for countdown
     this.createCountdownParticles()
 
+    // Animate countdown entrance
+    this.animateCountdownEntrance()
+
     // Start countdown
     this.update()
     this.intervalId = setInterval(() => this.update(), 1000)
 
     // Dev skip button
     this.devSkipButton.addEventListener('click', () => this.skipCountdown())
+  }
+
+  animateCountdownEntrance() {
+    const title = document.querySelector('.countdown-title')
+    const subtitle = document.querySelector('.countdown-subtitle')
+    const flipClock = document.querySelector('.flip-clock')
+    const date = document.querySelector('.countdown-date')
+
+    gsap.from(title, {
+      duration: 1.2,
+      y: -50,
+      opacity: 0,
+      scale: 0.8,
+      ease: 'back.out(1.7)',
+      delay: 0.2
+    })
+
+    gsap.from(subtitle, {
+      duration: 0.8,
+      y: 20,
+      opacity: 0,
+      ease: 'power3.out',
+      delay: 0.6
+    })
+
+    gsap.from(flipClock, {
+      duration: 1,
+      scale: 0.5,
+      opacity: 0,
+      ease: 'elastic.out(1, 0.5)',
+      delay: 0.9
+    })
+
+    gsap.from(date, {
+      duration: 0.8,
+      y: 20,
+      opacity: 0,
+      ease: 'power2.out',
+      delay: 1.4
+    })
   }
 
   createCountdownParticles() {
@@ -63,14 +106,19 @@ class CountdownController {
       const back = card.el.querySelector('.flip-card__back')
       const backBottom = card.el.querySelector('.flip-card__back-bottom')
 
+      // Remove flip class to reset animation
+      card.el.classList.remove('flip')
+      void card.el.offsetWidth // Force reflow
+
+      // Update top with current value (text content)
       top.textContent = this.zerofill(card.current)
+
+      // Update data-value attributes
       bottom.setAttribute('data-value', this.zerofill(card.current))
       back.setAttribute('data-value', this.zerofill(card.previous))
       backBottom.setAttribute('data-value', this.zerofill(card.previous))
 
       // Trigger flip animation
-      card.el.classList.remove('flip')
-      void card.el.offsetWidth // Force reflow
       card.el.classList.add('flip')
     }
   }
@@ -135,15 +183,15 @@ class CountdownController {
 
 // ========== HERO INITIALIZATION ==========
 function initializeHero() {
-  // Initialize parallax
-  const parallaxImage = document.getElementById('parallax-image')
-  if (parallaxImage) {
-    new simpleParallax(parallaxImage, {
-      scale: 1.6,
-      delay: 0.6,
-      transition: 'cubic-bezier(0,0,0,1)'
-    })
-  }
+  // Initialize parallax (temporalmente desactivado)
+  // const parallaxImage = document.getElementById('parallax-image')
+  // if (parallaxImage) {
+  //   new SimpleParallax(parallaxImage, {
+  //     scale: 1.6,
+  //     delay: 0.6,
+  //     transition: 'cubic-bezier(0,0,0,1)'
+  //   })
+  // }
 
   // Create particles
   const particlesContainer = document.getElementById('particles')
@@ -195,8 +243,18 @@ function initializeHero() {
     delay: 1.6
   })
 
+  // Initialize presentation controller FIRST
+  const presentationController = new PresentationController()
+
   // Play button hover effects
   const playButton = document.getElementById('playButton')
+
+  if (!playButton) {
+    console.error('❌ Play button not found!')
+    return
+  }
+
+  console.log('✅ Play button found, adding event listeners')
 
   playButton.addEventListener('mouseenter', () => {
     gsap.to('.play-button', {
@@ -215,6 +273,7 @@ function initializeHero() {
   })
 
   playButton.addEventListener('click', () => {
+    console.log('🎬 Play button clicked!')
     gsap.to('.play-button', {
       duration: 0.2,
       scale: 0.9,
@@ -225,35 +284,55 @@ function initializeHero() {
           scale: 1,
           ease: 'power2.out'
         })
+        // Start presentation after animation
+        console.log('🚀 Starting presentation...')
+        presentationController.startPresentation()
       }
     })
   })
-
-  // Initialize presentation controller
-  new PresentationController()
 }
 
 // ========== PRESENTATION CONTROLLER ==========
 class PresentationController {
   constructor() {
     this.currentSlide = 0
-    this.slides = document.querySelectorAll('.slide')
-    this.totalSlides = this.slides.length
+    this.totalSlides = 27 // Total de diapositivas
     this.presentationContainer = document.getElementById('presentationContainer')
+    this.slidesContainer = document.getElementById('slides')
     this.playButton = document.getElementById('playButton')
     this.closeButton = document.getElementById('closePresentation')
     this.currentSlideElement = document.getElementById('currentSlide')
     this.totalSlidesElement = document.getElementById('totalSlides')
 
+    this.loadSlides()
     this.init()
+  }
+
+  loadSlides() {
+    // Clear existing example slides
+    this.slidesContainer.innerHTML = ''
+
+    // Load all 26 slides
+    for (let i = 1; i <= this.totalSlides; i++) {
+      const slide = document.createElement('div')
+      slide.className = 'slide'
+
+      const img = document.createElement('img')
+      img.src = `/slides/slide-${String(i).padStart(2, '0')}.jpg`
+      img.alt = `Diapositiva ${i}`
+      img.className = 'slide-image'
+
+      slide.appendChild(img)
+      this.slidesContainer.appendChild(slide)
+    }
+
+    // Update slides reference
+    this.slides = document.querySelectorAll('.slide')
   }
 
   init() {
     // Update total slides counter
     this.totalSlidesElement.textContent = this.totalSlides
-
-    // Play button click
-    this.playButton.addEventListener('click', () => this.startPresentation())
 
     // Close button click
     this.closeButton.addEventListener('click', () => this.closePresentation())
@@ -270,6 +349,9 @@ class PresentationController {
   }
 
   startPresentation() {
+    // Reset to first slide
+    this.currentSlide = 0
+
     // Hide hero with animation
     gsap.to('.hero', {
       duration: 0.5,
@@ -356,19 +438,7 @@ class PresentationController {
       this.presentationContainer.classList.add('active')
     }
 
-    // Animate slide entrance
-    gsap.fromTo(this.slides[index],
-      {
-        opacity: 0,
-        x: 100
-      },
-      {
-        duration: 0.6,
-        opacity: 1,
-        x: 0,
-        ease: 'power3.out'
-      }
-    )
+    // No need for GSAP animation, CSS transitions handle it
   }
 }
 
