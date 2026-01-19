@@ -10,7 +10,7 @@ class CountdownController {
   constructor() {
     this.countdownSection = document.getElementById('countdownSection')
     this.heroSection = document.querySelector('.hero')
-    this.devSkipButton = document.getElementById('devSkipButton')
+    this.resourcesSection = document.querySelector('.resources-section')
 
     this.days = { el: document.getElementById('days'), current: 0, previous: 0 }
     this.hours = { el: document.getElementById('hours'), current: 0, previous: 0 }
@@ -30,9 +30,6 @@ class CountdownController {
     // Start countdown
     this.update()
     this.intervalId = setInterval(() => this.update(), 1000)
-
-    // Dev skip button
-    this.devSkipButton.addEventListener('click', () => this.skipCountdown())
   }
 
   animateCountdownEntrance() {
@@ -153,10 +150,6 @@ class CountdownController {
     this.updateCard(this.seconds, seconds)
   }
 
-  skipCountdown() {
-    this.finishCountdown()
-  }
-
   finishCountdown() {
     clearInterval(this.intervalId)
 
@@ -179,6 +172,60 @@ class CountdownController {
       }
     })
   }
+}
+
+// ========== RESOURCES INITIALIZATION ==========
+let resourcesInitialized = false
+
+function initializeResources() {
+  // Animate resources cards entrance
+  const cards = document.querySelectorAll('.resource-card')
+
+  // Ensure cards are visible and animate them
+  gsap.set(cards, { opacity: 0, y: 50 })
+  gsap.to(cards, {
+    duration: 0.8,
+    y: 0,
+    opacity: 1,
+    stagger: 0.2,
+    ease: 'power3.out',
+    delay: 0.3
+  })
+
+  // Add scroll up listener only once
+  if (!resourcesInitialized) {
+    const resourcesSection = document.querySelector('.resources-section')
+    let scrollTimeout
+
+    resourcesSection.addEventListener('wheel', (e) => {
+      if (e.deltaY < 0) { // Scrolling up
+        clearTimeout(scrollTimeout)
+        scrollTimeout = setTimeout(() => {
+          transitionBackToHero()
+        }, 100)
+      }
+    })
+
+    resourcesInitialized = true
+  }
+}
+
+function transitionBackToHero() {
+  const resourcesSection = document.querySelector('.resources-section')
+  const heroSection = document.querySelector('.hero')
+
+  gsap.to(resourcesSection, {
+    duration: 1,
+    opacity: 0,
+    onComplete: () => {
+      resourcesSection.style.display = 'none'
+      heroSection.style.display = 'flex'
+      gsap.to(heroSection, {
+        duration: 1,
+        opacity: 1
+      })
+    }
+  })
 }
 
 // ========== HERO INITIALIZATION ==========
@@ -289,6 +336,38 @@ function initializeHero() {
         presentationController.startPresentation()
       }
     })
+  })
+
+  // Add scroll listener to show resources section when scrolling down
+  const heroSection = document.querySelector('.hero')
+  let scrollTimeout
+
+  heroSection.addEventListener('wheel', (e) => {
+    if (e.deltaY > 0) { // Scrolling down
+      clearTimeout(scrollTimeout)
+      scrollTimeout = setTimeout(() => {
+        transitionToResources()
+      }, 100)
+    }
+  })
+}
+
+function transitionToResources() {
+  const heroSection = document.querySelector('.hero')
+  const resourcesSection = document.querySelector('.resources-section')
+
+  gsap.to(heroSection, {
+    duration: 1,
+    opacity: 0,
+    onComplete: () => {
+      heroSection.style.display = 'none'
+      resourcesSection.style.display = 'flex'
+      gsap.to(resourcesSection, {
+        duration: 1,
+        opacity: 1
+      })
+      initializeResources()
+    }
   })
 }
 
